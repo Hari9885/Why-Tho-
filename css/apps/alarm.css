@@ -1,0 +1,410 @@
+/* ===== Alarm App ===== */
+
+/* Alarm List Screen */
+.alarm-app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.alarm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.alarm-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #e94560, #c23152);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.alarm-add-btn {
+  width: 32px; height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e94560, #c23152);
+  color: white;
+  font-size: 18px;
+  font-weight: 300;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 12px rgba(233,69,96,0.35);
+}
+.alarm-add-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 18px rgba(233,69,96,0.5);
+}
+
+/* Alarm items list */
+.alarm-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.alarm-list::-webkit-scrollbar { width: 3px; }
+.alarm-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+.alarm-item {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s;
+}
+.alarm-item:hover {
+  background: rgba(255,255,255,0.09);
+}
+.alarm-item-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.alarm-time {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+.alarm-song-name {
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 400;
+}
+
+/* Toggle switch */
+.alarm-toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+}
+.alarm-toggle input {
+  opacity: 0;
+  width: 0; height: 0;
+}
+.alarm-toggle .slider {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.12);
+  border-radius: 22px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.alarm-toggle .slider::before {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  left: 3px; bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+.alarm-toggle input:checked + .slider {
+  background: linear-gradient(135deg, #e94560, #c23152);
+}
+.alarm-toggle input:checked + .slider::before {
+  transform: translateX(18px);
+}
+
+/* Empty state */
+.alarm-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.3);
+  font-size: 12px;
+  gap: 8px;
+}
+.alarm-empty-icon {
+  font-size: 40px;
+  opacity: 0.4;
+}
+
+/* ===== Set Alarm Screen ===== */
+.alarm-set-screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: fadeInUp 0.3s ease;
+}
+
+.alarm-back-btn {
+  background: none;
+  border: none;
+  color: #e94560;
+  font-size: 13px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 14px;
+  padding: 0;
+  text-align: left;
+  transition: opacity 0.2s;
+}
+.alarm-back-btn:hover { opacity: 0.7; }
+
+.alarm-set-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+  color: rgba(255,255,255,0.85);
+}
+
+.alarm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.alarm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.alarm-field label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255,255,255,0.4);
+}
+.alarm-field input[type="time"],
+.alarm-field select {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  color: white;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: 'Inter', Arial, sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+.alarm-field input[type="time"]:focus,
+.alarm-field select:focus {
+  border-color: #e94560;
+}
+.alarm-field select option {
+  background: #1a1a2e;
+  color: white;
+}
+
+.alarm-preview-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.7);
+  padding: 8px;
+  font-size: 11px;
+  font-family: 'Inter', Arial, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.alarm-preview-btn:hover {
+  background: rgba(255,255,255,0.14);
+  color: white;
+}
+
+.alarm-save-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #e94560, #c23152);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', Arial, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(233,69,96,0.3);
+  margin-top: auto;
+}
+.alarm-save-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(233,69,96,0.45);
+}
+.alarm-save-btn:active {
+  transform: translateY(0);
+}
+
+/* ===== Ringing Screen ===== */
+.alarm-ringing {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(160deg, #1a0a12 0%, #2d0a1a 40%, #0f3460 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  animation: ringFadeIn 0.5s ease;
+  gap: 16px;
+  padding: 20px;
+}
+@keyframes ringFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.alarm-ringing-time {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  background: linear-gradient(135deg, #fff, #e94560);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.alarm-ringing-song {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 10px;
+}
+
+/* Pulsing mic icon */
+.alarm-mic-container {
+  position: relative;
+  width: 80px; height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alarm-mic-pulse {
+  position: absolute;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: rgba(233,69,96,0.2);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.alarm-mic-pulse:nth-child(2) { animation-delay: 0.5s; }
+.alarm-mic-pulse:nth-child(3) { animation-delay: 1s; }
+@keyframes pulse {
+  0%   { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+.alarm-mic-icon {
+  position: relative;
+  z-index: 2;
+  font-size: 36px;
+}
+
+.alarm-ringing-prompt {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.75);
+  text-align: center;
+}
+
+.alarm-ringing-lyrics-hint {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+  font-style: italic;
+  max-height: 50px;
+  overflow: hidden;
+  padding: 0 10px;
+}
+
+/* Live transcript */
+.alarm-transcript {
+  font-size: 11px;
+  color: #e94560;
+  text-align: center;
+  min-height: 18px;
+  padding: 0 10px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Match progress bar */
+.alarm-match-bar-container {
+  width: 80%;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.alarm-match-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #e94560, #4ade80);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.alarm-match-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+}
+
+/* Dismiss success */
+.alarm-dismiss-success {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(160deg, #0a2e1a 0%, #1a3e2e 50%, #0f4630 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 21;
+  animation: ringFadeIn 0.5s ease;
+  gap: 12px;
+}
+.alarm-dismiss-icon {
+  font-size: 56px;
+  animation: bounceIn 0.6s ease;
+}
+@keyframes bounceIn {
+  0%   { transform: scale(0); }
+  60%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.alarm-dismiss-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #4ade80;
+}
+.alarm-dismiss-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+}
+
+/* Delete button for alarm items */
+.alarm-delete-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.25);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s;
+  margin-right: 8px;
+}
+.alarm-delete-btn:hover {
+  color: #e94560;
+}

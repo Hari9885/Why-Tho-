@@ -1,0 +1,224 @@
+/* ===== Phone Shell ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  user-select: none;
+  font-family: 'Inter', Arial, sans-serif;
+  background: #0a0a0a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.phone {
+  width: 320px;
+  height: 640px;
+  background: #000;
+  border-radius: 36px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 3px #1a1a1a,
+    0 0 0 6px #0d0d0d,
+    0 20px 60px rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ===== Screen ===== */
+.screen {
+  flex: 1;
+  background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: white;
+  padding: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ===== Status Bar ===== */
+.status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 2px 8px;
+  color: rgba(255,255,255,0.85);
+  position: relative;
+  z-index: 5;
+}
+
+#menuIcon {
+  cursor: pointer;
+  font-size: 15px;
+  transition: color 0.2s;
+}
+#menuIcon:hover { color: #e94560; }
+
+/* ===== App Grid ===== */
+.apps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+  padding: 0 4px;
+}
+
+.app {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 18px 10px;
+  border-radius: 16px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 26px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+.app::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.app:hover {
+  transform: scale(1.08);
+  background: rgba(255,255,255,0.14);
+  box-shadow: 0 4px 20px rgba(233,69,96,0.15);
+}
+.app:hover::before { opacity: 1; }
+.app:active { transform: scale(0.95); }
+
+.app-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 500;
+  margin-top: 6px;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.3px;
+}
+
+/* ===== Controls ===== */
+.controls {
+  background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+  padding: 10px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.controls button {
+  padding: 7px 12px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.75);
+  font-size: 11px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+.controls button:hover {
+  background: rgba(233,69,96,0.25);
+  color: #fff;
+}
+.controls button:active {
+  transform: scale(0.93);
+}
+
+/* ===== Notification Panel ===== */
+.notification-panel {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 50%;
+  background: rgba(10,10,10,0.95);
+  backdrop-filter: blur(20px);
+  color: white;
+  padding: 16px;
+  transform: translateY(-100%);
+  transition: transform 0.25s ease;
+  z-index: 10;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.notification-panel h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.5px;
+}
+.notification-panel button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  font-size: 12px;
+  font-family: 'Inter', Arial, sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.notification-panel button:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+/* ===== Brightness ===== */
+.brightness-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: black;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s;
+  z-index: 3;
+}
+
+/* ===== Sun & Moon ===== */
+.sun {
+  width: 100px; height: 100px;
+  background: radial-gradient(circle, #ffd700, #ff8c00);
+  border-radius: 50%;
+  position: absolute;
+  top: 200px; left: 100px;
+  z-index: 1;
+  display: none;
+  box-shadow: 0 0 40px rgba(255,215,0,0.4);
+}
+.sun.active { display: block; }
+
+.moon {
+  width: 100px; height: 100px;
+  background: radial-gradient(circle, #2a2a3e, #111);
+  border-radius: 50%;
+  position: absolute;
+  top: 200px; left: 100px;
+  cursor: grab;
+  z-index: 2;
+  display: none;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+.moon.active { display: block; }
+
+/* ===== Power Off ===== */
+.screen.off {
+  background: #000 !important;
+}
+.screen.off * { display: none !important; }
+.screen.off::after {
+  content: '';
+  display: block;
+}
