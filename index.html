@@ -1,0 +1,2149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phone Interface</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/apps/alarm.css">
+  <link rel="stylesheet" href="css/apps/gallery.css">
+  <link rel="stylesheet" href="css/apps/phone-dialer.css">
+  <link rel="stylesheet" href="css/apps/camera.css">
+  <link rel="stylesheet" href="css/apps/messenger.css">
+  <style>
+    /* ===== Theme Variables ===== */
+    :root {
+      --phone-bg: #E9E9E9;
+      --bar-bg: #D9D9D9;
+      --app-bg: #6E6E6E;
+      --app-text: #000000;
+      --status-text: #000000;
+      --screen-bg: #E9E9E9;
+      --home-btn-bg: #A9A7A7;
+      --notif-bg: #4E4E4E;
+      --notif-text: #FFFFFF;
+      --toggle-bg: #D9D9D9;
+      --toggle-text: #FFFFFF;
+      --vol-text: #000000;
+      --body-bg: #2E2E2E;
+      --icon-color: #1E1E1E;
+      --shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Dark theme */
+    .dark-theme {
+      --phone-bg: #1a1a2e;
+      --bar-bg: #111122;
+      --app-bg: #2a2a4a;
+      --app-text: #dddddd;
+      --status-text: #cccccc;
+      --screen-bg: #16213e;
+      --home-btn-bg: #333355;
+      --notif-bg: #0d0d1a;
+      --notif-text: #ffffff;
+      --toggle-bg: #333355;
+      --toggle-text: #ffffff;
+      --vol-text: #cccccc;
+      --body-bg: #0a0a14;
+      --icon-color: #cccccc;
+      --shadow: 4px 4px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      user-select: none;
+      font-family: 'Irish Grover', cursive;
+      background: var(--body-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 0.4s;
+    }
+
+    /* ===== Phone Shell ===== */
+    .phone {
+      width: 420px;
+      height: 763px;
+      background: var(--phone-bg);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s, box-shadow 0.4s;
+    }
+
+    /* ===== Status / Notification Bar ===== */
+    .status-bar {
+      width: 100%;
+      height: 40px;
+      background: var(--bar-bg);
+      border-radius: 5px 5px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: relative;
+      z-index: 6;
+      flex-shrink: 0;
+      transition: background 0.4s;
+    }
+
+    .status-time {
+      font-size: 20px;
+      color: var(--status-text);
+      transition: color 0.4s;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Signal bars (LTE) */
+    .signal-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 1.5px;
+      height: 18px;
+    }
+
+    .signal-bars .bar {
+      width: 3px;
+      background: var(--icon-color);
+      border-radius: 1px;
+      transition: background 0.4s;
+    }
+
+    .signal-bars .bar:nth-child(1) {
+      height: 5px;
+    }
+
+    .signal-bars .bar:nth-child(2) {
+      height: 9px;
+    }
+
+    .signal-bars .bar:nth-child(3) {
+      height: 13px;
+    }
+
+    .signal-bars .bar:nth-child(4) {
+      height: 18px;
+    }
+
+    /* Wifi icon (simple SVG-ish) */
+    .wifi-icon {
+      font-size: 16px;
+      color: var(--icon-color);
+      transition: color 0.4s;
+    }
+
+    /* Battery */
+    .battery-icon {
+      display: flex;
+      align-items: center;
+      gap: 1px;
+    }
+
+    .battery-body {
+      width: 24px;
+      height: 12px;
+      border: 1.6px solid var(--icon-color);
+      border-radius: 2px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.4s;
+    }
+
+    .battery-body::after {
+      content: '';
+      position: absolute;
+      left: 1px;
+      top: 1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      background: var(--icon-color);
+      border-radius: 1px;
+      transition: background 0.4s;
+    }
+
+    .battery-tip {
+      width: 2px;
+      height: 5px;
+      background: var(--icon-color);
+      border-radius: 0 1px 1px 0;
+      transition: background 0.4s;
+    }
+
+    /* ===== Main Screen ===== */
+    .screen {
+      flex: 1;
+      background: var(--screen-bg);
+      color: var(--app-text);
+      padding: 0;
+      overflow: hidden;
+      position: relative;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    /* ===== VOL label ===== */
+    .vol-label {
+      position: absolute;
+      left: 12px;
+      top: 14px;
+      font-size: 14px;
+      line-height: 17px;
+      text-align: center;
+      color: var(--vol-text);
+      writing-mode: vertical-lr;
+      letter-spacing: 4px;
+      cursor: pointer;
+      z-index: 5;
+      transition: color 0.4s;
+    }
+
+    /* ===== Power button ===== */
+    .power-btn {
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      width: 31px;
+      height: 28px;
+      cursor: pointer;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .power-btn svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .power-btn svg path {
+      stroke: var(--icon-color);
+      transition: stroke 0.4s;
+    }
+
+    /* ===== App Grid ===== */
+    .apps-area {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 20px 16px;
+      gap: 16px;
+    }
+
+    .app-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .app {
+      width: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .app-icon {
+      width: 80px;
+      height: 67px;
+      background: var(--app-bg);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      transition: transform 0.2s, background 0.4s;
+    }
+
+    .app-icon:hover {
+      transform: scale(1.06);
+    }
+
+    .app-icon:active {
+      transform: scale(0.94);
+    }
+
+    .app-label {
+      font-size: 16px;
+      line-height: 19px;
+      text-align: center;
+      color: var(--app-text);
+      transition: color 0.4s;
+    }
+
+    /* ===== Home Bar ===== */
+    .home-bar {
+      width: 100%;
+      height: 43px;
+      background: var(--bar-bg);
+      border-radius: 0 0 5px 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.4s;
+    }
+
+    .home-button {
+      width: 39px;
+      height: 29px;
+      background: var(--home-btn-bg);
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.4s;
+    }
+
+    .home-button:hover {
+      transform: scale(1.1);
+    }
+
+    .home-button:active {
+      transform: scale(0.9);
+    }
+
+    /* ===== Notification / Settings Panel ===== */
+    .notification-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 75%;
+      background: var(--notif-bg);
+      box-shadow: var(--shadow);
+      border-radius: 0 0 30px 30px;
+      color: var(--notif-text);
+      padding: 24px 20px 16px;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease, background 0.4s;
+      z-index: 10;
+    }
+
+    .notif-title {
+      font-size: 32px;
+      line-height: 39px;
+      color: var(--notif-text);
+      margin-bottom: 24px;
+      transition: color 0.4s;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+
+    .toggle-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .toggle-circle {
+      width: 60px;
+      height: 60px;
+      background: var(--toggle-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .toggle-circle:hover {
+      transform: scale(1.08);
+    }
+
+    .toggle-circle:active {
+      transform: scale(0.92);
+    }
+
+    .toggle-circle.active {
+      background: #e94560;
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      line-height: 16px;
+      text-align: center;
+      color: var(--toggle-text);
+      transition: color 0.4s;
+    }
+
+    /* Theme indicator */
+    .theme-indicator {
+      margin-top: 20px;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .theme-label {
+      font-size: 16px;
+      color: var(--toggle-text);
+    }
+
+    .theme-switch {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 26px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .theme-switch.dark {
+      background: #e94560;
+    }
+
+    .theme-switch::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 3px;
+      left: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+
+    .theme-switch.dark::after {
+      transform: translateX(24px);
+    }
+
+    /* ===== Brightness Overlay ===== */
+    .brightness-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.2s;
+      z-index: 3;
+    }
+
+    /* Sun & Moon (hidden by default) */
+    .sun {
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, #ffe066, #ffc107);
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 31;
+      display: none;
+      box-shadow: 0 0 40px rgba(255, 193, 7, 0.6);
+      pointer-events: none;
+    }
+
+    .sun.active {
+      display: block;
+    }
+
+    .moon {
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, #222, #111);
+      border-radius: 50%;
+      position: absolute;
+      top: calc(50% - 120px);
+      left: calc(50% - 50px);
+      cursor: grab;
+      z-index: 32;
+      display: none;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      border: 2px solid #333;
+    }
+
+    .moon.active {
+      display: block;
+    }
+
+    .moon:active {
+      cursor: grabbing;
+    }
+
+    /* Airplane catch animation */
+    @keyframes pulse-ring {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(1.14);
+      }
+    }
+
+    @keyframes slideInDND {
+      from { transform: translateX(120%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ===== Puzzle Overlay ===== */
+    .puzzle-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 40;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+
+    .puzzle-overlay * {
+      pointer-events: auto;
+    }
+
+    .puzzle-card {
+      background: #1c1c1c;
+      border: 1.5px solid #333;
+      border-radius: 24px;
+      padding: 20px 18px 16px;
+      width: 330px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    .puzzle-header {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .puzzle-title {
+      font-size: 13px;
+      color: #bbb;
+    }
+
+    .puzzle-progress {
+      font-size: 12px;
+      color: #666;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .puzzle-hint-thumb {
+      position: absolute;
+      top: 18px;
+      right: 62px;
+      width: 28px;
+      height: 28px;
+      border-radius: 5px;
+      overflow: hidden;
+      opacity: 0.18;
+      border: 1px solid #444;
+      cursor: help;
+    }
+
+    .puzzle-discard {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: #555;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .puzzle-discard:hover {
+      color: #e05050;
+    }
+
+    .target-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 87px);
+      grid-template-rows: repeat(3, 87px);
+      gap: 2px;
+      background: #2a2a2a;
+      border: 2px solid #2a2a2a;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .slot {
+      width: 87px;
+      height: 87px;
+      background: #1e1e1e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: background 0.15s;
+    }
+
+    .slot.drag-over {
+      background: #2a3a2a;
+      outline: 2px dashed #3aaa3a;
+    }
+
+    .slot.wrong-over {
+      background: #3a1e1e;
+      outline: 2px dashed #aa3a3a;
+    }
+
+    .slot::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      transition: background 0.25s;
+    }
+
+    .slot.correct-flash::after {
+      background: rgba(58, 200, 80, 0.4);
+    }
+
+    .slot.wrong-flash::after {
+      background: rgba(220, 60, 60, 0.4);
+    }
+
+    .slot:not(.locked) {
+      border: 1.5px dashed #2e2e2e;
+    }
+
+    .slot.locked {
+      border: none;
+    }
+
+    .piece-wrapper {
+      width: 87px;
+      height: 87px;
+      cursor: grab;
+      border-radius: 3px;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
+      touch-action: none;
+      position: relative;
+      user-select: none;
+      -webkit-user-drag: none;
+      -moz-user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .piece-wrapper canvas {
+      width: 87px;
+      height: 87px;
+      display: block;
+    }
+
+    .piece-wrapper:hover {
+      transform: scale(1.04);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .piece-wrapper.dragging {
+      opacity: 0.35;
+      transform: scale(0.95);
+      cursor: grabbing;
+    }
+
+    .piece-wrapper.locked {
+      cursor: default;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .tray-label {
+      font-size: 10px;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      align-self: flex-start;
+    }
+
+
+    .piece-tray {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      width: 100%;
+      min-height: 100px;
+      background: #141414;
+      border: 1px solid #252525;
+      border-radius: 12px;
+      padding: 8px;
+    }
+
+    .piece-tray.tray-drag-over {
+      border-color: #444;
+      background: #1a1a1a;
+    }
+
+    /* ===== Gallery Overlay ===== */
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 45;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gallery-inner {
+      background: #1c1c1c;
+      border: 1.5px solid #333;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .gallery-title {
+      font-size: 12px;
+      color: #888;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      align-self: flex-start;
+    }
+
+    .gallery-canvas-wrap {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.5px solid #333;
+    }
+
+    .gallery-close {
+      font-size: 12px;
+      color: #555;
+      cursor: pointer;
+      padding: 8px 20px;
+      border: 1px solid #333;
+      border-radius: 20px;
+      background: none;
+    }
+
+    .gallery-close:hover {
+      color: #bbb;
+      border-color: #555;
+    }
+
+    .gallery-count {
+      font-size: 10px;
+      color: #3aaa3a;
+    }
+
+    /* Screenshot flash */
+    #ssFlash {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      z-index: 50;
+      display: none;
+      pointer-events: none;
+      transition: opacity 0.15s;
+    }
+
+    /* Drag ghost that follows cursor - currently not using separate element, dragging piece directly */
+
+    /* Power off state */
+    .screen.off {
+      background: #000 !important;
+    }
+
+    .screen.off>*:not(.power-btn) {
+      display: none !important;
+    }
+
+    .phone.powered-off .status-bar {
+      background: #000 !important;
+    }
+
+    .phone.powered-off .status-bar * {
+      visibility: hidden;
+    }
+
+    .phone.powered-off .home-bar {
+      background: #000 !important;
+    }
+
+    .phone.powered-off .home-button {
+      visibility: hidden;
+    }
+
+    .phone.powered-off .notification-panel {
+      display: none !important;
+    }
+
+    .phone.powered-off .maze-overlay {
+      display: none !important;
+    }
+
+    /* ===== Maze Mini-Game ===== */
+    .maze-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--screen-bg);
+      z-index: 35;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 10px 8px 8px;
+      overflow: hidden;
+    }
+
+    .maze-overlay.active {
+      display: flex;
+    }
+
+    .maze-header {
+      font-size: 14px;
+      color: var(--app-text);
+      margin-bottom: 6px;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .maze-header span {
+      font-size: 11px;
+      opacity: 0.6;
+      display: block;
+    }
+
+    #mazeCanvas {
+      border: 2px solid var(--app-bg);
+      border-radius: 8px;
+      background: #111;
+      display: block;
+    }
+
+    .maze-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .maze-btn {
+      padding: 6px 18px;
+      border-radius: 14px;
+      border: 1.5px solid var(--app-bg);
+      background: var(--app-bg);
+      color: var(--app-text);
+      font-family: 'Irish Grover', cursive;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.2s;
+    }
+
+    .maze-btn:hover {
+      transform: scale(1.06);
+    }
+
+    .maze-btn:active {
+      transform: scale(0.94);
+    }
+
+    .maze-btn.give-up {
+      background: #e94560;
+      color: #fff;
+      border-color: #e94560;
+    }
+
+    .maze-dpad {
+      display: grid;
+      grid-template-columns: 40px 40px 40px;
+      grid-template-rows: 40px 40px 40px;
+      gap: 3px;
+      margin-top: 6px;
+    }
+
+    .maze-dpad button {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      border: 1px solid var(--app-bg);
+      background: var(--app-bg);
+      color: var(--app-text);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s;
+    }
+
+    .maze-dpad button:active {
+      transform: scale(0.88);
+    }
+
+    .maze-dpad .empty {
+      visibility: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="phone">
+
+    <!-- Notification / Settings Panel -->
+    <div class="notification-panel" id="notificationPanel">
+      <div class="notif-title">Settings</div>
+
+      <div class="toggle-row">
+        <div class="toggle-item" onclick="toggleFlashlight()">
+          <div class="toggle-circle" id="flashToggle">🔦</div>
+          <div class="toggle-label">Flash</div>
+        </div>
+        <div class="toggle-item" onclick="takeScreenshot()">
+          <div class="toggle-circle" id="ssToggle">📸</div>
+          <div class="toggle-label">Screenshot</div>
+        </div>
+        <div class="toggle-item" onclick="toggleDND()">
+          <div class="toggle-circle" id="dndToggle">🔕</div>
+          <div class="toggle-label">DND</div>
+        </div>
+        <div class="toggle-item" onclick="openCalculator()">
+          <div class="toggle-circle">🧮</div>
+          <div class="toggle-label">Calculator</div>
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-item" onclick="toggleBrightnessControl()">
+          <div class="toggle-circle">🌗</div>
+          <div class="toggle-label">Brightness</div>
+        </div>
+        <div class="toggle-item" onclick="toggleRotation()">
+          <div class="toggle-circle" id="rotateToggle">🔄</div>
+          <div class="toggle-label">Rotation</div>
+        </div>
+        <div class="toggle-item" onclick="toggleLocation()">
+          <div class="toggle-circle" id="locationToggle">📍</div>
+          <div class="toggle-label">Location</div>
+        </div>
+        <div class="toggle-item" onclick="toggleAirplane()">
+          <div class="toggle-circle" id="airplaneToggle">✈️</div>
+          <div class="toggle-label">Airplane</div>
+        </div>
+      </div>
+
+      <!-- Theme toggle -->
+      <div class="theme-indicator">
+        <span class="theme-label">🌙 Dark Mode</span>
+        <div class="theme-switch" id="themeSwitch" onclick="toggleTheme()"></div>
+      </div>
+    </div>
+
+    <!-- Puzzle Overlay for Screenshot -->
+    <div id="puzzleOverlay" class="puzzle-overlay">
+      <div class="puzzle-card">
+        <div class="puzzle-header">
+          <span class="puzzle-title">drag pieces into place to save</span>
+          <span class="puzzle-progress" id="puzzleProgress">0 / 9</span>
+        </div>
+        <div class="puzzle-hint-thumb" id="hintThumb" title="squint for a hint"></div>
+        <button class="puzzle-discard" id="discardBtn">✕</button>
+        <div class="target-grid" id="targetGrid"></div>
+        <span class="tray-label">drag from here ↓</span>
+        <div class="piece-tray" id="pieceTray"></div>
+      </div>
+    </div>
+
+    <!-- Gallery Overlay -->
+    <div id="galleryOverlay" class="gallery-overlay">
+      <div class="gallery-inner">
+        <span class="gallery-title">🖼️ Gallery</span>
+        <div class="gallery-canvas-wrap" id="galleryCanvasWrap"></div>
+        <span class="gallery-count" id="galleryCount"></span>
+        <button class="gallery-close" id="galleryClose">close</button>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar">
+      <span class="status-time" id="time">12:00</span>
+      <div class="status-icons">
+        <div class="signal-bars">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+        <span class="wifi-icon">⊛</span>
+        <div class="battery-icon">
+          <div class="battery-body"></div>
+          <div class="battery-tip"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Screen -->
+    <div class="screen" id="screen">
+      <div class="brightness-overlay" id="brightnessOverlay"></div>
+      <div id="ssFlash"></div>
+
+      <!-- VOL & Power -->
+      <div class="vol-label" id="volLabel" onclick="cycleVolume()">V O L</div>
+      <div class="power-btn" onclick="togglePower()">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3v6M18.36 6.64A9 9 0 1 1 5.64 6.64" stroke-width="2.5" stroke-linecap="round" />
+        </svg>
+      </div>
+
+      <!-- App Grid -->
+      <div class="apps-area" id="appsArea" style="background:url('i/WhatsApp Image 2026-03-25 at 16.23.30.jpeg') center/cover no-repeat;">
+        <div class="app-row">
+          <div class="app" onclick="openApp('Phone')">
+            <div class="app-icon">📞</div>
+            <span class="app-label">Phone</span>
+          </div>
+          <div class="app" onclick="openApp('Messages')">
+            <div class="app-icon">💬</div>
+            <span class="app-label">Message</span>
+          </div>
+          <div class="app" onclick="openApp('Music')">
+            <div class="app-icon">🎵</div>
+            <span class="app-label">Music</span>
+          </div>
+          <div class="app" onclick="openApp('Camera')">
+            <div class="app-icon">📷</div>
+            <span class="app-label">Camera</span>
+          </div>
+        </div>
+        <div class="app-row">
+          <div class="app" onclick="openApp('Settings')">
+            <div class="app-icon">⚙️</div>
+            <span class="app-label">Settings</span>
+          </div>
+          <div class="app" onclick="openGallery()">
+            <div class="app-icon">🖼️</div>
+            <span class="app-label">Gallery</span>
+          </div>
+          <div class="app" onclick="openCalendar()">
+            <div class="app-icon">📅</div>
+            <span class="app-label">Calendar</span>
+          </div>
+          <div class="app" onclick="openAlarm()">
+            <div class="app-icon">⏰</div>
+            <span class="app-label">Alarm</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sun & Moon for brightness (outside screen so they survive innerHTML changes) -->
+    <div class="sun" id="sun"></div>
+    <div class="moon" id="moon"></div>
+
+    <!-- Maze Overlay -->
+    <div id="mazeOverlay" class="maze-overlay">
+      <div class="maze-header">Find your way 🏠<span>controls may feel... different 😈</span></div>
+      <canvas id="mazeCanvas"></canvas>
+      <div class="maze-buttons">
+        <button class="maze-btn" onclick="refreshMaze()">🔄 New Maze</button>
+      </div>
+      <div class="maze-dpad">
+        <button class="empty"></button>
+        <button onclick="moveMazePlayer(0,-1)">▲</button>
+        <button class="empty"></button>
+        <button onclick="moveMazePlayer(-1,0)">◀</button>
+        <button class="empty"></button>
+        <button onclick="moveMazePlayer(1,0)">▶</button>
+        <button class="empty"></button>
+        <button onclick="moveMazePlayer(0,1)">▼</button>
+        <button class="empty"></button>
+      </div>
+    </div>
+
+    <!-- Home Bar -->
+    <div class="home-bar">
+      <button class="home-button" onclick="goHome()"></button>
+    </div>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script>
+    /* ===== Core State ===== */
+    let isOn = true, flashlight = false, volume = 50;
+    let isDarkTheme = localStorage.getItem('whytho_theme') === 'dark';
+
+    // Apply saved theme
+    if (isDarkTheme) {
+      document.body.classList.add('dark-theme');
+      const sw = document.getElementById('themeSwitch');
+      if (sw) sw.classList.add('dark');
+    }
+
+    /* ===== Time ===== */
+    function updateTime() {
+      const el = document.getElementById('time');
+      if (el) {
+        const now = new Date();
+        el.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    /* ===== Theme Toggle ===== */
+    function toggleTheme() {
+      isDarkTheme = !isDarkTheme;
+      document.body.classList.toggle('dark-theme', isDarkTheme);
+      const sw = document.getElementById('themeSwitch');
+      if (sw) sw.classList.toggle('dark', isDarkTheme);
+      localStorage.setItem('whytho_theme', isDarkTheme ? 'dark' : 'light');
+    }
+
+    /* ===== Brightness Control ===== */
+    function toggleBrightnessControl() {
+      document.getElementById('moon').classList.toggle('active');
+      document.getElementById('sun').classList.toggle('active');
+    }
+
+    /* ===== App Functions ===== */
+    function openApp(name) {
+      if (!isOn) return;
+      document.getElementById('screen').innerHTML = `<h2 style="padding:20px;font-family:'Irish Grover',cursive;">${name}</h2>`;
+    }
+    function openCalendar() {
+      const today = new Date();
+      document.getElementById('screen').innerHTML = `<h2 style="padding:20px;font-family:'Irish Grover',cursive;">Calendar</h2><p style="padding:0 20px;font-family:'Irish Grover',cursive;">${today.toDateString()}</p>`;
+    }
+    function openGallery() {
+      document.getElementById('screen').innerHTML = `<h2 style="padding:20px;font-family:'Irish Grover',cursive;">Gallery</h2>`;
+    }
+
+    /* ===== Navigation ===== */
+    function goHome() {
+      if (!isOn) return;
+      startMaze();
+    }
+    function actualGoHome() { location.reload(); }
+    let screenBackupHTML = '';
+    function togglePower() {
+      const s = document.getElementById('screen');
+      const phone = document.querySelector('.phone');
+      isOn = !isOn;
+      if (!isOn) {
+        // Power OFF
+        mazeActive = false;
+        document.getElementById('mazeOverlay').classList.remove('active');
+        s.classList.add('off');
+        phone.classList.add('powered-off');
+      } else {
+        // Power ON — reload to restore clean state
+        location.reload();
+      }
+    }
+
+    /* ===== Maze Mini-Game ===== */
+    let mazeGrid = [], mazeCols = 0, mazeRows = 0;
+    let mazePlayerX = 0, mazePlayerY = 0;
+    let mazeGoalX = 0, mazeGoalY = 0;
+    const CELL = 26;
+    let mazeActive = false;
+
+    function startMaze() {
+      const canvas = document.getElementById('mazeCanvas');
+      const screen = document.getElementById('screen');
+      // Size maze to fit screen area
+      const sw = screen.offsetWidth - 20;
+      const sh = screen.offsetHeight - 170;
+      mazeCols = Math.floor(sw / CELL) | 1; // ensure odd
+      mazeRows = Math.floor(sh / CELL) | 1;
+      if (mazeCols % 2 === 0) mazeCols--;
+      if (mazeRows % 2 === 0) mazeRows--;
+      mazeCols = Math.max(7, Math.min(mazeCols, 15));
+      mazeRows = Math.max(7, Math.min(mazeRows, 19));
+
+      canvas.width = mazeCols * CELL;
+      canvas.height = mazeRows * CELL;
+
+      generateMaze();
+      mazePlayerX = 1; mazePlayerY = 1;
+      mazeGoalX = mazeCols - 2; mazeGoalY = mazeRows - 2;
+      mazeActive = true;
+
+      drawMaze();
+      document.getElementById('mazeOverlay').classList.add('active');
+    }
+
+    function generateMaze() {
+      // Init grid: 0=wall, 1=path
+      mazeGrid = [];
+      for (let y = 0; y < mazeRows; y++) {
+        mazeGrid[y] = [];
+        for (let x = 0; x < mazeCols; x++) {
+          mazeGrid[y][x] = 0;
+        }
+      }
+      // Recursive backtracker
+      function carve(cx, cy) {
+        mazeGrid[cy][cx] = 1;
+        const dirs = [[0, -2], [0, 2], [-2, 0], [2, 0]];
+        // Shuffle
+        for (let i = dirs.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [dirs[i], dirs[j]] = [dirs[j], dirs[i]];
+        }
+        for (const [dx, dy] of dirs) {
+          const nx = cx + dx, ny = cy + dy;
+          if (nx > 0 && nx < mazeCols - 1 && ny > 0 && ny < mazeRows - 1 && mazeGrid[ny][nx] === 0) {
+            mazeGrid[cy + dy / 2][cx + dx / 2] = 1;
+            carve(nx, ny);
+          }
+        }
+      }
+      carve(1, 1);
+      // Ensure goal is open
+      mazeGrid[mazeRows - 2][mazeCols - 2] = 1;
+    }
+
+    function drawMaze() {
+      const canvas = document.getElementById('mazeCanvas');
+      const ctx = canvas.getContext('2d');
+
+      for (let y = 0; y < mazeRows; y++) {
+        for (let x = 0; x < mazeCols; x++) {
+          ctx.fillStyle = mazeGrid[y][x] === 1 ? '#1a1a2e' : '#333';
+          ctx.fillRect(x * CELL, y * CELL, CELL, CELL);
+          // Grid line
+          if (mazeGrid[y][x] === 1) {
+            ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+            ctx.strokeRect(x * CELL, y * CELL, CELL, CELL);
+          }
+        }
+      }
+
+      // Goal 🏠
+      ctx.font = `${CELL - 4}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🏠', mazeGoalX * CELL + CELL / 2, mazeGoalY * CELL + CELL / 2);
+
+      // Player 😊
+      ctx.fillText('😊', mazePlayerX * CELL + CELL / 2, mazePlayerY * CELL + CELL / 2);
+    }
+
+    function moveMazePlayer(dx, dy) {
+      if (!mazeActive) return;
+      // INVERTED controls: flip direction
+      dx = -dx;
+      dy = -dy;
+
+      // Slide to dead end on straight corridors
+      let cx = mazePlayerX, cy = mazePlayerY;
+      while (true) {
+        const nx = cx + dx, ny = cy + dy;
+        if (nx < 0 || nx >= mazeCols || ny < 0 || ny >= mazeRows) break;
+        if (mazeGrid[ny][nx] === 0) break; // hit a wall
+        cx = nx;
+        cy = ny;
+        // Check if this is a junction (more than 2 open neighbors = intersection)
+        let openNeighbors = 0;
+        if (cy > 0 && mazeGrid[cy - 1][cx] === 1) openNeighbors++;
+        if (cy < mazeRows - 1 && mazeGrid[cy + 1][cx] === 1) openNeighbors++;
+        if (cx > 0 && mazeGrid[cy][cx - 1] === 1) openNeighbors++;
+        if (cx < mazeCols - 1 && mazeGrid[cy][cx + 1] === 1) openNeighbors++;
+        // If junction (3+ open neighbors) or dead end (1 open neighbor), stop
+        if (openNeighbors !== 2) break;
+        // If corridor bends (not straight), also stop
+        const nextX = cx + dx, nextY = cy + dy;
+        if (nextX < 0 || nextX >= mazeCols || nextY < 0 || nextY >= mazeRows || mazeGrid[nextY][nextX] === 0) break;
+      }
+
+      if (cx === mazePlayerX && cy === mazePlayerY) return; // didn't move
+
+      mazePlayerX = cx;
+      mazePlayerY = cy;
+      drawMaze();
+
+      // Check win
+      if (mazePlayerX === mazeGoalX && mazePlayerY === mazeGoalY) {
+        mazeActive = false;
+        showToast('🏠 Welcome home!');
+        setTimeout(() => {
+          document.getElementById('mazeOverlay').classList.remove('active');
+          actualGoHome();
+        }, 600);
+      }
+    }
+
+    function refreshMaze() {
+      generateMaze();
+      mazePlayerX = 1; mazePlayerY = 1;
+      drawMaze();
+      showToast('🔄 new maze!');
+    }
+
+
+
+    // Keyboard controls (also inverted via moveMazePlayer)
+    document.addEventListener('keydown', (e) => {
+      if (!mazeActive) return;
+      switch (e.key) {
+        case 'ArrowUp': case 'w': case 'W': moveMazePlayer(0, -1); e.preventDefault(); break;
+        case 'ArrowDown': case 's': case 'S': moveMazePlayer(0, 1); e.preventDefault(); break;
+        case 'ArrowLeft': case 'a': case 'A': moveMazePlayer(-1, 0); e.preventDefault(); break;
+        case 'ArrowRight': case 'd': case 'D': moveMazePlayer(1, 0); e.preventDefault(); break;
+      }
+    });
+
+    /* ===== Flashlight ===== */
+    function toggleFlashlight() {
+      flashlight = !flashlight;
+      document.body.style.background = flashlight ? '#fff' : '';
+      document.getElementById('flashToggle').classList.toggle('active', flashlight);
+    }
+
+    /* ===== Quick Toggle Stubs ===== */
+    function toggleWifi() { document.getElementById('wifiToggle').classList.toggle('active'); }
+    function toggleBluetooth() { document.getElementById('btToggle').classList.toggle('active'); }
+    function toggleAirplane() {
+      const toggle = document.getElementById('airplaneToggle');
+
+      // If already active, just toggle it off
+      if (toggle.classList.contains('active')) {
+        toggle.classList.remove('active');
+        return;
+      }
+
+      // Start the catch-the-plane game
+      startAirplaneChallenge(toggle);
+    }
+
+    /* ===== Airplane Catch Challenge ===== */
+    let airplaneActive = false;
+    let airplaneAnimId = null;
+    let airplanePx, airplanePy, airplaneVx, airplaneVy;
+    let airplaneAttempt = 0;
+    let airplaneTrail = [];
+    let airplaneEnabled = false;
+
+    function startAirplaneChallenge(toggle) {
+      if (airplaneActive) return;
+
+      airplaneActive = true;
+      airplaneTrail = [];
+
+      // Get screen dimensions
+      const screen = document.getElementById('screen');
+      const W = screen.offsetWidth;
+      const H = screen.offsetHeight;
+
+      // Random entry position
+      const side = Math.floor(Math.random() * 4);
+      const speed = 3.8 + airplaneAttempt * 0.3;
+      const spread = 30 * Math.PI / 180;
+      let angle;
+
+      if (side === 0) { airplanePx = -45; airplanePy = Math.random() * H; angle = (Math.random() * 2 - 1) * spread; }
+      else if (side === 1) { airplanePx = W + 45; airplanePy = Math.random() * H; angle = Math.PI + (Math.random() * 2 - 1) * spread; }
+      else if (side === 2) { airplanePy = -45; airplanePx = Math.random() * W; angle = Math.PI / 2 + (Math.random() * 2 - 1) * spread; }
+      else { airplanePy = H + 45; airplanePx = Math.random() * W; angle = -Math.PI / 2 + (Math.random() * 2 - 1) * spread; }
+
+      airplaneVx = speed * Math.cos(angle);
+      airplaneVy = speed * Math.sin(angle);
+
+      // Create plane element
+      let planeEl = document.getElementById('airplanePlane');
+      if (!planeEl) {
+        planeEl = document.createElement('div');
+        planeEl.id = 'airplanePlane';
+        planeEl.innerHTML = '✈️';
+        planeEl.style.cssText = 'position:absolute;font-size:28px;z-index:100;pointer-events:none;display:block;filter:drop-shadow(0 0 6px rgba(255,200,50,0.7));user-select:none;';
+        screen.appendChild(planeEl);
+      }
+      planeEl.style.display = 'block';
+
+      // Create catch zone
+      let catchZone = document.getElementById('airplaneCatch');
+      if (!catchZone) {
+        catchZone = document.createElement('div');
+        catchZone.id = 'airplaneCatch';
+        catchZone.style.cssText = 'position:absolute;width:58px;height:58px;border-radius:50%;border:2px dashed #f0c030;z-index:101;display:block;pointer-events:none;animation:pulse-ring 0.8s ease-in-out infinite;';
+        screen.appendChild(catchZone);
+      }
+      catchZone.style.display = 'block';
+
+      // Create click target
+      let clickTgt = document.getElementById('airplaneClick');
+      if (!clickTgt) {
+        clickTgt = document.createElement('div');
+        clickTgt.id = 'airplaneClick';
+        clickTgt.style.cssText = 'position:absolute;width:66px;height:66px;border-radius:50%;z-index:102;cursor:crosshair;display:block;background:transparent;';
+        clickTgt.onclick = function (e) { e.stopPropagation(); catchAirplane(toggle, planeEl, catchZone, clickTgt); };
+        screen.appendChild(clickTgt);
+      }
+      clickTgt.style.display = 'block';
+
+      // Create timer bar
+      let timerBar = document.getElementById('airplaneTimer');
+      if (!timerBar) {
+        timerBar = document.createElement('div');
+        timerBar.id = 'airplaneTimer';
+        timerBar.style.cssText = 'position:absolute;bottom:0;left:0;height:3px;background:#f0c030;z-index:105;border-radius:2px;display:block;transition:background 0.3s;';
+        screen.appendChild(timerBar);
+      }
+      timerBar.style.display = 'block';
+      timerBar.style.width = '100%';
+
+      // Store elements for animation
+      window.airplaneElements = { planeEl, catchZone, clickTgt, timerBar, screen, W, H };
+
+      airplaneStartTime = Date.now();
+      showToast('catch it!');
+
+      // Create trail canvas
+      let trailCanvas = document.getElementById('airplaneTrail');
+      if (!trailCanvas) {
+        trailCanvas = document.createElement('canvas');
+        trailCanvas.id = 'airplaneTrail';
+        trailCanvas.style.cssText = 'position:absolute;inset:0;z-index:99;pointer-events:none;';
+        screen.appendChild(trailCanvas);
+      }
+      trailCanvas.width = W;
+      trailCanvas.height = H;
+      trailCanvas.style.display = 'block';
+      window.airplaneCtx = trailCanvas.getContext('2d');
+
+      airplaneAnimId = requestAnimationFrame(airplaneLoop);
+    }
+
+    let airplaneStartTime = 0;
+    const AIRPLANE_TIME = 7000;
+
+    function airplaneLoop() {
+      if (!airplaneActive) return;
+
+      const { planeEl, catchZone, clickTgt, timerBar, screen, W, H } = window.airplaneElements;
+      const elapsed = Date.now() - airplaneStartTime;
+      const ratio = Math.max(0, 1 - elapsed / AIRPLANE_TIME);
+
+      timerBar.style.width = (ratio * 100) + '%';
+      timerBar.style.background = ratio > 0.4 ? '#f0c030' : '#e05030';
+
+      if (elapsed > AIRPLANE_TIME) {
+        airplaneFail();
+        return;
+      }
+
+      // Random wobble
+      if (Math.random() < 0.02) {
+        airplaneVx += (Math.random() - 0.5) * 1.2;
+        airplaneVy += (Math.random() - 0.5) * 1.2;
+      }
+
+      airplanePx += airplaneVx;
+      airplanePy += airplaneVy;
+
+      // Sync positions
+      const angle = Math.atan2(airplaneVy, airplaneVx) * 180 / Math.PI;
+      planeEl.style.left = (airplanePx - 18) + 'px';
+      planeEl.style.top = (airplanePy - 18) + 'px';
+      planeEl.style.transform = `rotate(${angle}deg)`;
+      catchZone.style.left = (airplanePx - 29) + 'px';
+      catchZone.style.top = (airplanePy - 29) + 'px';
+      clickTgt.style.left = (airplanePx - 33) + 'px';
+      clickTgt.style.top = (airplanePy - 33) + 'px';
+
+      // Draw trail
+      airplaneTrail.push({ x: airplanePx, y: airplanePy });
+      if (airplaneTrail.length > 50) airplaneTrail.shift();
+
+      const ctx = window.airplaneCtx;
+      ctx.clearRect(0, 0, W, H);
+      for (let i = 1; i < airplaneTrail.length; i++) {
+        const alpha = (i / airplaneTrail.length) * 0.35;
+        ctx.beginPath();
+        ctx.moveTo(airplaneTrail[i - 1].x, airplaneTrail[i - 1].y);
+        ctx.lineTo(airplaneTrail[i].x, airplaneTrail[i].y);
+        ctx.strokeStyle = `rgba(240,192,48,${alpha})`;
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+      }
+
+      // Check if exited
+      if (airplanePx < -120 || airplanePx > W + 120 || airplanePy < -120 || airplanePy > H + 120) {
+        airplaneFail();
+        return;
+      }
+
+      airplaneAnimId = requestAnimationFrame(airplaneLoop);
+    }
+
+    function catchAirplane(toggle, planeEl, catchZone, clickTgt) {
+      if (!airplaneActive) return;
+
+      airplaneActive = false;
+      cancelAnimationFrame(airplaneAnimId);
+
+      // Clean up elements
+      planeEl.style.display = 'none';
+      catchZone.style.display = 'none';
+      clickTgt.style.display = 'none';
+      document.getElementById('airplaneTimer').style.display = 'none';
+      document.getElementById('airplaneTrail').style.display = 'none';
+      window.airplaneCtx.clearRect(0, 0, window.airplaneElements.W, window.airplaneElements.H);
+
+      airplaneEnabled = true;
+      airplaneAttempt = 0;
+      toggle.classList.add('active');
+      showToast('airplane mode on');
+    }
+
+    function airplaneFail() {
+      airplaneActive = false;
+      cancelAnimationFrame(airplaneAnimId);
+      airplaneAttempt++;
+
+      const { planeEl, catchZone, clickTgt, timerBar, screen } = window.airplaneElements;
+      planeEl.style.display = 'none';
+      catchZone.style.display = 'none';
+      clickTgt.style.display = 'none';
+      timerBar.style.display = 'none';
+      const trailEl = document.getElementById('airplaneTrail');
+      if (trailEl) trailEl.style.display = 'none';
+      window.airplaneCtx.clearRect(0, 0, window.airplaneElements.W, window.airplaneElements.H);
+
+      const msgs = ['gone. try again.', 'too slow!', 'it escaped.', 'nope.'];
+      showToast(msgs[Math.floor(Math.random() * msgs.length)]);
+
+      setTimeout(() => {
+        startAirplaneChallenge(document.getElementById('airplaneToggle'));
+      }, 2100);
+    }
+    function toggleSilent() { document.getElementById('silentToggle').classList.toggle('active'); }
+
+    /* ===== New Toggle Functions ===== */
+    let dndNotifIntervals = [];
+    const DND_QUOTES = [
+      "The early bird gets the worm, but the second mouse gets the cheese.",
+      "Always borrow money from a pessimist. They won't expect it back.",
+      "I'm on a seafood diet. I see food and I eat it.",
+      "If at first you don't succeed, skydiving isn't for you.",
+      "The problem with doing nothing is never knowing when you're done.",
+      "Life is short. Smile while you still have teeth.",
+      "I asked God for a bike, but God doesn't work that way.",
+      "I haven't slept for 10 days, because that would be too long.",
+      "A clear conscience is just a sign of bad memory.",
+      "I used to think I was indecisive. Now I'm not so sure."
+    ];
+    function toggleDND() {
+      const t = document.getElementById('dndToggle');
+      t.classList.toggle('active');
+      if (t.classList.contains('active')) {
+        showToast('🔕 Do Not Disturb ON');
+        // Fire 5 useless quote notifications at 8-second intervals
+        const shuffled = DND_QUOTES.sort(() => Math.random() - 0.5).slice(0, 5);
+        dndNotifIntervals.forEach(id => clearTimeout(id));
+        dndNotifIntervals = [];
+        shuffled.forEach((q, i) => {
+          const id = setTimeout(() => {
+            showDNDNotification('🔕 ' + q);
+          }, (i + 1) * 8000);
+          dndNotifIntervals.push(id);
+        });
+      } else {
+        showToast('🔔 Do Not Disturb OFF');
+        dndNotifIntervals.forEach(id => clearTimeout(id));
+        dndNotifIntervals = [];
+      }
+    }
+    function showDNDNotification(msg) {
+      let container = document.getElementById('dndNotifContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'dndNotifContainer';
+        container.style.cssText = 'position:absolute;top:45px;left:10px;right:10px;z-index:20;display:flex;flex-direction:column;gap:6px;pointer-events:none;';
+        document.querySelector('.phone').appendChild(container);
+      }
+      const notif = document.createElement('div');
+      notif.style.cssText = `
+        background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);
+        color:white;padding:10px 14px;border-radius:14px;font-size:12px;
+        font-family:'Irish Grover',cursive;pointer-events:auto;
+        border-left:3px solid #e94560;animation:slideInDND 0.35s ease;
+        box-shadow:0 4px 16px rgba(0,0,0,0.4);
+      `;
+      notif.textContent = msg;
+      container.appendChild(notif);
+      setTimeout(() => { notif.style.opacity = '0'; notif.style.transition = 'opacity 0.4s'; setTimeout(() => notif.remove(), 400); }, 6000);
+    }
+    function openCalculator() {
+      if (!isOn) return;
+      // Close settings panel first
+      panel.style.transform = 'translateY(-100%)';
+      currentY = -100;
+      openApp('Calculator');
+    }
+
+    /* ===== Screenshot Puzzle ===== */
+    const GRID = 3, PIECE = 87, DIM = GRID * PIECE;
+    let solvedCount = 0, capturing = false;
+    let dragData = null;
+
+    // Load saved screenshots from localStorage
+    let savedShots = [];
+    try {
+      const stored = localStorage.getItem('ssGallery');
+      if (stored) {
+        const dataUrls = JSON.parse(stored);
+        savedShots = dataUrls.map(url => {
+          const img = new Image();
+          img.src = url;
+          return img;
+        });
+      }
+    } catch (e) { console.error('Failed to load gallery:', e); }
+
+    function saveGalleryToStorage() {
+      try {
+        const dataUrls = savedShots.map(img => img.src).filter(src => src);
+        localStorage.setItem('ssGallery', JSON.stringify(dataUrls));
+      } catch (e) { console.error('Failed to save gallery:', e); }
+    }
+
+    const puzzleOverlay = document.getElementById('puzzleOverlay');
+    const targetGrid = document.getElementById('targetGrid');
+    const pieceTray = document.getElementById('pieceTray');
+    const progressEl = document.getElementById('puzzleProgress');
+    const discardBtn = document.getElementById('discardBtn');
+    const hintThumb = document.getElementById('hintThumb');
+    const galleryOverlay = document.getElementById('galleryOverlay');
+    const galleryWrap = document.getElementById('galleryCanvasWrap');
+    const galleryClose = document.getElementById('galleryClose');
+    const galleryCount = document.getElementById('galleryCount');
+
+    function takeScreenshot() {
+      console.log('takeScreenshot called, savedShots:', savedShots.length);
+      const toggle = document.getElementById('ssToggle');
+      console.log('Toggle element:', toggle);
+      if (toggle.classList.contains('active')) {
+        console.log('Toggle is active, opening gallery');
+        toggle.classList.remove('active');
+        if (savedShots.length > 0) openGallery();
+        return;
+      }
+
+      if (capturing) {
+        console.log('Already capturing');
+        return;
+      }
+
+      console.log('Starting capture');
+      beginCapture();
+    }
+
+    async function beginCapture() {
+      console.log('beginCapture called');
+
+      if (capturing) return;
+      capturing = true;
+
+      const ssFlash = document.getElementById('ssFlash');
+      console.log('ssFlash element:', ssFlash);
+
+      if (ssFlash) {
+        ssFlash.style.display = 'block';
+        ssFlash.style.opacity = '1';
+      }
+
+      await new Promise(r => setTimeout(r, 80));
+
+      // Check if html2canvas is loaded
+      console.log('html2canvas available:', typeof html2canvas);
+
+      if (typeof html2canvas === 'undefined') {
+        showToast('Screenshot library not loaded');
+        capturing = false;
+        return;
+      }
+
+      let raw;
+      try {
+        console.log('Calling html2canvas...');
+        raw = await html2canvas(document.getElementById('screen'), {
+          scale: 1,
+          logging: false,
+          useCORS: true,
+          allowTaint: true,
+          ignoreElements: el => el.id === 'ssFlash',
+          backgroundColor: '#1a1a2e'
+        });
+        console.log('Screenshot captured successfully:', raw);
+      } catch (e) {
+        console.error('Screenshot error:', e);
+        if (ssFlash) {
+          ssFlash.style.opacity = '0';
+          setTimeout(() => { ssFlash.style.display = 'none'; }, 200);
+        }
+        showToast('screenshot failed: ' + e.message);
+        capturing = false;
+        return;
+      }
+
+      if (ssFlash) {
+        ssFlash.style.opacity = '0';
+        setTimeout(() => { ssFlash.style.display = 'none'; }, 200);
+      }
+
+      if (!raw) {
+        showToast('screenshot failed: no image');
+        capturing = false;
+        return;
+      }
+
+      if (!raw) {
+        showToast('screenshot failed: no image');
+        capturing = false;
+        return;
+      }
+
+      const scaled = document.createElement('canvas');
+      scaled.width = scaled.height = DIM;
+      scaled.getContext('2d').drawImage(raw, 0, 0, DIM, DIM);
+      buildPuzzle(scaled);
+      capturing = false;
+    }
+
+    function buildPuzzle(src) {
+      const pieces = [];
+      for (let r = 0; r < GRID; r++) {
+        for (let c = 0; c < GRID; c++) {
+          const pc = document.createElement('canvas');
+          pc.width = pc.height = PIECE;
+          pc.getContext('2d').drawImage(src, c * PIECE, r * PIECE, PIECE, PIECE, 0, 0, PIECE, PIECE);
+          pieces.push({ canvas: pc, correctIndex: r * GRID + c });
+        }
+      }
+      // Fisher-Yates shuffle
+      for (let i = pieces.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
+      }
+      renderPuzzle(pieces, src);
+    }
+
+    function renderPuzzle(pieces, src) {
+      solvedCount = 0;
+      dragData = null;
+
+      // Hint thumb
+      hintThumb.innerHTML = '';
+      const th = document.createElement('canvas');
+      th.width = th.height = 28;
+      th.getContext('2d').drawImage(src, 0, 0, 28, 28);
+      hintThumb.appendChild(th);
+
+      // Slots
+      targetGrid.innerHTML = '';
+      for (let i = 0; i < GRID * GRID; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.dataset.index = i;
+        targetGrid.appendChild(slot);
+      }
+
+      // Tray pieces
+      pieceTray.innerHTML = '';
+      pieces.forEach(p => {
+        const w = makePieceEl(p.canvas, p.correctIndex);
+        pieceTray.appendChild(w);
+      });
+
+      updateProgress();
+      puzzleOverlay.style.display = 'flex';
+    }
+
+    function makePieceEl(pieceCanvas, correctIndex) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'piece-wrapper';
+      wrapper.dataset.correctIndex = correctIndex;
+      wrapper.draggable = false; // Important: prevent default HTML5 drag
+
+      const display = document.createElement('canvas');
+      display.width = display.height = PIECE;
+      display.getContext('2d').drawImage(pieceCanvas, 0, 0);
+      wrapper.appendChild(display);
+
+      wrapper._pieceCanvas = pieceCanvas;
+
+      wrapper.addEventListener('mousedown', e => onDragStart(e, wrapper));
+      wrapper.addEventListener('touchstart', e => onDragStart(e, wrapper), { passive: false });
+
+      return wrapper;
+    }
+
+    function onDragStart(e, wrapper) {
+      if (wrapper.classList.contains('locked')) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      const source = wrapper.parentElement;
+      dragData = {
+        wrapper,
+        source,
+        correctIndex: parseInt(wrapper.dataset.correctIndex),
+        pieceCanvas: wrapper._pieceCanvas
+      };
+
+      wrapper.classList.add('dragging');
+
+      // Move to body to avoid overflow issues
+      document.body.appendChild(wrapper);
+      wrapper.style.position = 'fixed';
+      wrapper.style.zIndex = '1000';
+
+      const pos = getEventXY(e);
+      wrapper.style.left = (pos.x - PIECE / 2) + 'px';
+      wrapper.style.top = (pos.y - PIECE / 2) + 'px';
+      wrapper.style.pointerEvents = 'none';
+
+      document.addEventListener('mousemove', onDragMove, { passive: false });
+      document.addEventListener('touchmove', onDragMove, { passive: false });
+      document.addEventListener('mouseup', onDragEnd);
+      document.addEventListener('touchend', onDragEnd);
+    }
+
+    function getEventXY(e) {
+      if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      if (e.changedTouches && e.changedTouches.length > 0) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      return { x: e.clientX, y: e.clientY };
+    }
+
+    function onDragMove(e) {
+      e.preventDefault();
+      if (!dragData) return;
+
+      const pos = getEventXY(e);
+      dragData.wrapper.style.left = (pos.x - PIECE / 2) + 'px';
+      dragData.wrapper.style.top = (pos.y - PIECE / 2) + 'px';
+    }
+
+    function onDragEnd(e) {
+      document.removeEventListener('mousemove', onDragMove);
+      document.removeEventListener('touchmove', onDragMove);
+      document.removeEventListener('mouseup', onDragEnd);
+      document.removeEventListener('touchend', onDragEnd);
+
+      if (!dragData) return;
+
+      const wrapper = dragData.wrapper;
+      wrapper.classList.remove('dragging');
+      wrapper.style.position = '';
+      wrapper.style.zIndex = '';
+      wrapper.style.left = '';
+      wrapper.style.top = '';
+      wrapper.style.pointerEvents = '';
+
+      document.querySelectorAll('.slot.drag-over, .slot.wrong-over').forEach(s => { s.classList.remove('drag-over', 'wrong-over'); });
+      pieceTray.classList.remove('tray-drag-over');
+
+      const pos = getEventXY(e);
+      const el = document.elementFromPoint(pos.x, pos.y);
+
+      if (!el) {
+        dragData.source.appendChild(wrapper);
+        dragData = null;
+        return;
+      }
+
+      const slot = el.closest('.slot');
+      const tray = el.closest('#pieceTray');
+
+      if (slot && !slot.querySelector('.piece-wrapper.locked')) {
+        dropOnSlot(slot);
+      } else if (tray) {
+        dropOnTray();
+      } else {
+        dragData.source.appendChild(wrapper);
+      }
+
+      dragData = null;
+    }
+
+    // Hover highlighting
+    document.addEventListener('mousemove', e => {
+      if (!dragData) return;
+      document.querySelectorAll('.slot.drag-over, .slot.wrong-over').forEach(s => s.classList.remove('drag-over', 'wrong-over'));
+      pieceTray.classList.remove('tray-drag-over');
+
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      if (!el) return;
+      const slot = el.closest('.slot');
+      const tray = el.closest('#pieceTray');
+
+      if (slot && !slot.querySelector('.piece-wrapper.locked')) {
+        const slotIndex = parseInt(slot.dataset.index);
+        slot.classList.add(dragData.correctIndex === slotIndex ? 'drag-over' : 'wrong-over');
+      } else if (tray) {
+        tray.classList.add('tray-drag-over');
+      }
+    });
+
+    function dropOnSlot(slot) {
+      const { wrapper, correctIndex } = dragData;
+      const slotIndex = parseInt(slot.dataset.index);
+
+      const occupant = slot.querySelector('.piece-wrapper:not(.locked)');
+      if (occupant) pieceTray.appendChild(occupant);
+
+      slot.appendChild(wrapper);
+
+      if (correctIndex === slotIndex) {
+        wrapper.classList.add('locked');
+        slot.classList.add('locked', 'correct-flash');
+        setTimeout(() => slot.classList.remove('correct-flash'), 600);
+        solvedCount++;
+        updateProgress();
+        if (solvedCount === GRID * GRID) setTimeout(onPuzzleComplete, 350);
+      } else {
+        slot.classList.add('wrong-flash');
+        setTimeout(() => {
+          slot.classList.remove('wrong-flash');
+          pieceTray.appendChild(wrapper);
+        }, 500);
+      }
+    }
+
+    function dropOnTray() {
+      pieceTray.appendChild(dragData.wrapper);
+    }
+
+    function updateProgress() {
+      progressEl.textContent = `${solvedCount} / ${GRID * GRID}`;
+    }
+
+    function onPuzzleComplete() {
+      console.log('Puzzle complete! Saving screenshot');
+      const final = document.createElement('canvas');
+      final.width = final.height = DIM;
+      const fctx = final.getContext('2d');
+      document.querySelectorAll('.slot').forEach(slot => {
+        const idx = parseInt(slot.dataset.index);
+        const col = idx % GRID, row = Math.floor(idx / GRID);
+        const pc = slot.querySelector('canvas');
+        if (pc) fctx.drawImage(pc, col * PIECE, row * PIECE);
+      });
+
+      console.log('Saving to gallery, total:', savedShots.length + 1);
+
+      // Convert canvas to image for storage
+      const img = new Image();
+      img.src = final.toDataURL('image/png');
+      savedShots.push(img);
+      saveGalleryToStorage(); // Save to localStorage
+      puzzleOverlay.style.display = 'none';
+      targetGrid.innerHTML = '';
+      pieceTray.innerHTML = '';
+
+      document.getElementById('ssToggle').classList.add('active');
+      showToast(`saved to gallery (${savedShots.length})`);
+    }
+
+    discardBtn.addEventListener('click', () => {
+      puzzleOverlay.style.display = 'none';
+      targetGrid.innerHTML = '';
+      pieceTray.innerHTML = '';
+      dragData = null;
+      showToast('screenshot discarded');
+    });
+
+    function openGallery() {
+      console.log('openGallery called, savedShots:', savedShots, 'length:', savedShots.length);
+      if (savedShots.length === 0) {
+        showToast('no screenshots saved');
+        return;
+      }
+      const latest = savedShots[savedShots.length - 1];
+      console.log('Latest shot:', latest);
+      galleryWrap.innerHTML = '';
+      const d = document.createElement('canvas');
+      d.width = d.height = DIM;
+      d.style.width = d.style.height = DIM + 'px';
+      d.getContext('2d').drawImage(latest, 0, 0);
+      galleryWrap.appendChild(d);
+      galleryCount.textContent = `${savedShots.length} screenshot${savedShots.length > 1 ? 's' : ''} saved`;
+      galleryOverlay.style.display = 'flex';
+    }
+
+    galleryClose.addEventListener('click', () => { galleryOverlay.style.display = 'none'; });
+    function toggleRotation() { document.getElementById('rotateToggle').classList.toggle('active'); }
+    function toggleLocation() { document.getElementById('locationToggle').classList.toggle('active'); }
+
+    /* ===== Volume ===== */
+    function cycleVolume() {
+      volume = volume >= 100 ? 0 : volume + 10;
+      showToast('🔊 Volume ' + volume);
+    }
+    function volumeUp() { volume = Math.min(100, volume + 10); showToast('🔊 Volume ' + volume); }
+    function volumeDown() { volume = Math.max(0, volume - 10); showToast('🔉 Volume ' + volume); }
+
+    function showToast(msg) {
+      let toast = document.getElementById('phone-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'phone-toast';
+        toast.style.cssText = `
+      position:absolute;bottom:60px;left:50%;transform:translateX(-50%);
+      background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);
+      color:white;padding:6px 16px;border-radius:20px;font-size:14px;
+      font-family:'Irish Grover',cursive;pointer-events:none;
+      opacity:0;transition:opacity 0.3s;z-index:50;white-space:nowrap;
+    `;
+        document.querySelector('.phone').appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 1500);
+    }
+
+    /* ===== Notification Panel Drag ===== */
+    const panel = document.getElementById('notificationPanel');
+    let draggingPanel = false, startY = 0, currentY = -100;
+
+    document.addEventListener('mousedown', (e) => {
+      const phoneRect = document.querySelector('.phone').getBoundingClientRect();
+      const relY = e.clientY - phoneRect.top;
+      if (relY < 50 || currentY === 0) {
+        draggingPanel = true;
+        startY = e.clientY;
+      }
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!draggingPanel) return;
+      let delta = e.clientY - startY;
+      let movePercent = (delta / window.innerHeight) * 150;
+      let translateY = Math.min(0, Math.max(-100, -100 + movePercent));
+      panel.style.transform = `translateY(${translateY}%)`;
+      currentY = translateY;
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!draggingPanel) return;
+      draggingPanel = false;
+      if (currentY > -60) {
+        panel.style.transform = 'translateY(0%)';
+        currentY = 0;
+      } else {
+        panel.style.transform = 'translateY(-100%)';
+        currentY = -100;
+      }
+    });
+
+    /* ===== Moon Drag (Brightness) ===== */
+    const moon = document.getElementById('moon');
+    const sun = document.getElementById('sun');
+    const overlay = document.getElementById('brightnessOverlay');
+    let dragging = false, offsetX = 0, offsetY = 0;
+
+    function startDrag(clientX, clientY) {
+      dragging = true;
+      const rect = moon.getBoundingClientRect();
+      offsetX = clientX - rect.left;
+      offsetY = clientY - rect.top;
+    }
+    function stopDrag() { dragging = false; }
+    function doDrag(clientX, clientY) {
+      if (!dragging) return;
+      const phoneEl = document.querySelector('.phone');
+      const rect = phoneEl.getBoundingClientRect();
+      let x = clientX - rect.left - offsetX;
+      let y = clientY - rect.top - offsetY;
+      x = Math.max(0, Math.min(rect.width - 100, x));
+      y = Math.max(0, Math.min(rect.height - 100, y));
+      moon.style.left = x + 'px';
+      moon.style.top = y + 'px';
+      moon.style.transform = 'none';
+
+      const sunRect = sun.getBoundingClientRect();
+      const moonRect = moon.getBoundingClientRect();
+      const dx = (sunRect.left + 50) - (moonRect.left + 50);
+      const dy = (sunRect.top + 50) - (moonRect.top + 50);
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      let coverage = Math.max(0, 1 - dist / 100);
+      overlay.style.opacity = coverage * 0.9;
+
+      localStorage.setItem('whytho_brightness', JSON.stringify({ x, y, coverage }));
+
+      if (coverage > 0.5 && !isDarkTheme) toggleTheme();
+      else if (coverage < 0.2 && isDarkTheme) toggleTheme();
+    }
+
+    // Mouse events
+    moon.addEventListener('mousedown', (e) => { startDrag(e.clientX, e.clientY); e.preventDefault(); });
+    document.addEventListener('mouseup', stopDrag);
+    document.addEventListener('mousemove', (e) => doDrag(e.clientX, e.clientY));
+
+    // Touch events
+    moon.addEventListener('touchstart', (e) => { const t = e.touches[0]; startDrag(t.clientX, t.clientY); e.preventDefault(); });
+    document.addEventListener('touchend', stopDrag);
+    document.addEventListener('touchmove', (e) => { if (dragging) { const t = e.touches[0]; doDrag(t.clientX, t.clientY); e.preventDefault(); } }, { passive: false });
+
+    // Restore saved brightness on load
+    (function restoreBrightness() {
+      const saved = localStorage.getItem('whytho_brightness');
+      if (saved) {
+        const b = JSON.parse(saved);
+        overlay.style.opacity = b.coverage * 0.9;
+        moon.style.left = b.x + 'px';
+        moon.style.top = b.y + 'px';
+        moon.style.transform = 'none';
+      }
+    })();
+  </script>
+
+  <!-- App Modules -->
+  <script src="js/apps/alarm.js"></script>
+  <script src="js/apps/gallery.js"></script>
+  <script src="js/apps/phone-dialer.js"></script>
+  <script src="js/apps/camera.js"></script>
+  <script src="js/apps/messenger.js"></script>
+
+</body>
+
+</html>
