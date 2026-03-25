@@ -1,0 +1,27 @@
+{
+  "twinkle_twinkle": {
+    "title": "Twinkle Twinkle Little Star",
+    "lyrics": "twinkle twinkle little star how i wonder what you are up above the world so high like a diamond in the sky twinkle twinkle little star how i wonder what you are",
+    "audio": null
+  },
+  "happy_birthday": {
+    "title": "Happy Birthday",
+    "lyrics": "happy birthday to you happy birthday to you happy birthday dear friend happy birthday to you",
+    "audio": null
+  },
+  "jingle_bells": {
+    "title": "Jingle Bells",
+    "lyrics": "jingle bells jingle bells jingle all the way oh what fun it is to ride in a one horse open sleigh jingle bells jingle bells jingle all the way",
+    "audio": null
+  },
+  "mary_had_a_lamb": {
+    "title": "Mary Had a Little Lamb",
+    "lyrics": "mary had a little lamb little lamb little lamb mary had a little lamb its fleece was white as snow",
+    "audio": null
+  },
+  "row_your_boat": {
+    "title": "Row Row Row Your Boat",
+    "lyrics": "row row row your boat gently down the stream merrily merrily merrily merrily life is but a dream",
+    "audio": null
+  }
+}
