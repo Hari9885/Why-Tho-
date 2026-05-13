@@ -514,8 +514,15 @@
     }
 
     @keyframes slideInDND {
-      from { transform: translateX(120%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+      from {
+        transform: translateX(120%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
 
     /* ===== Puzzle Overlay ===== */
@@ -1030,7 +1037,8 @@
       </div>
 
       <!-- App Grid -->
-      <div class="apps-area" id="appsArea" style="background:url('i/WhatsApp Image 2026-03-25 at 16.23.30.jpeg') center/cover no-repeat;">
+      <div class="apps-area" id="appsArea"
+        style="background:url('i/WhatsApp Image 2026-03-25 at 16.23.30.jpeg') center/cover no-repeat;">
         <div class="app-row">
           <div class="app" onclick="openApp('Phone')">
             <div class="app-icon">📞</div>
